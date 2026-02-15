@@ -1,4 +1,4 @@
-import Contact from '../models/Contact';
+import Contact from '../models/Contact.js';
 
 // @desc    Get all contacts for logged-in user
 // @route   GET /api/contacts
