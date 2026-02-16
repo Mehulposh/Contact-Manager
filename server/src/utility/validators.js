@@ -13,6 +13,7 @@ const loginValidation = [
   body('password').notEmpty().withMessage('Password is required'),
 ];
 
+// CREATE validation - all fields required
 const contactValidation = [
   body('name').trim().notEmpty().withMessage('Contact name is required'),
   body('email')
@@ -25,8 +26,59 @@ const contactValidation = [
   body('tags').optional().isArray().withMessage('Tags must be an array'),
 ];
 
+
+// UPDATE validation - all fields optional, but at least one required
+const updateContactValidation = [
+  body('name')
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 100 }).withMessage('Name must be 2-100 characters'),
+  
+  body('email')
+    .optional()
+    .trim()
+    .isEmail().withMessage('Valid email format is required')
+    .normalizeEmail(),
+  
+  body('phone')
+    .optional()
+    .trim()
+    .isLength({ min: 10 }).withMessage('Phone number must be at least 10 digits'),
+  
+  body('notes')
+    .optional()
+    .isString()
+    .trim(),
+  
+  body('tags')
+    .optional()
+    .isArray().withMessage('Tags must be an array')
+    .custom((value) => {
+      if (value && value.some(tag => typeof tag !== 'string')) {
+        throw new Error('All tags must be strings');
+      }
+      if (value && value.length > 10) {
+        throw new Error('Maximum 10 tags allowed');
+      }
+      return true;
+    }),
+  
+  // Custom validator: At least one field must be provided
+  body().custom((value, { req }) => {
+    const updateFields = ['name', 'email', 'phone', 'notes', 'tags'];
+    const hasAnyField = updateFields.some(field => field in req.body);
+    
+    if (!hasAnyField) {
+      throw new Error('At least one field is required to update the contact');
+    }
+    return true;
+  }).withMessage('At least one field is required to update the contact')
+];
+
+// Export both validations
 export {
   registerValidation,
   loginValidation,
   contactValidation,
+  updateContactValidation
 };

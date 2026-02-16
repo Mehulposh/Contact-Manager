@@ -9,7 +9,7 @@ import {
   searchContacts,
 } from '../controllers/contactController.js';
 import authentication from '../middleware/authMiddleware.js';
-import { contactValidation } from '../utility/validators.js';
+import { contactValidation, updateContactValidation } from '../utility/validators.js';
 import validate from '../middleware/validation.js';
 
 router.get('/search', authentication, searchContacts);
@@ -19,7 +19,7 @@ router.route('/')
 
 router.route('/:id')
   .get(authentication, getContactById)
-  .put(authentication, contactValidation, validate, updateContact)
+  .put(authentication, updateContactValidation, validate, updateContact)
   .delete(authentication, deleteContact);
 
 export default router;
